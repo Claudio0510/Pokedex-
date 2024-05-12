@@ -1,0 +1,79 @@
+import tkinter as tk
+import requests
+
+
+#Function to find the pokemon 
+def Find_Pokemon_Function():
+    #To get the word on the box write 
+    global Pokemon_Write
+    Pokemon_Write = Box_Write.get("1.0", "end-1c")
+    
+    if Pokemon_Write:
+  
+        url = f"{base_url}pokemon/{Pokemon_Write}"
+        respuesta = requests.get(url)
+        
+        if respuesta.status_code == 200:
+            global datos_pokemon
+            datos_pokemon = respuesta.json()
+            Window_Pokemon_Function()
+            return datos_pokemon
+            
+
+        
+        elif respuesta.status_code == 404:
+            print("The Pokemon doesn't exist.")
+            
+            Screen_Wrong = tk.Tk()
+            Screen_Wrong.geometry("500x500")
+            Screen_Wrong.title(Pokemon_Write)
+            # Crear etiquetas para cada pieza de información
+            Problem = tk.Label(Screen_Wrong, text="Pokemon doesn't exist")
+            Problem.pack()
+
+            
+        else:
+            print(f"Error al obtener datos del servidor: {respuesta.status_code}")
+        
+def Window_Pokemon_Function():
+     
+    Screen_Small = tk.Tk()
+    Screen_Small.geometry("500x500")
+    Screen_Small.title(Pokemon_Write)
+    # Crear etiquetas para cada pieza de información
+    Name = tk.Label(Screen_Small, text="Nombre: " + datos_pokemon['name'])
+    Name.pack()
+    Height = tk.Label(Screen_Small, text="Altura: " + str(datos_pokemon['height']))
+    Height.pack()
+    Weight = tk.Label(Screen_Small, text="Peso: " + str(datos_pokemon['weight']))
+    Weight.pack()
+    
+
+# Definir la URL base de la API de Pokémon
+base_url = "https://pokeapi.co/api/v2/"
+
+MainScreen = tk.Tk()
+MainScreen.geometry("500x500")
+MainScreen.title("Pokemon First Generation")
+
+
+#Create the box to write on the window
+Box_Write = tk.Text(MainScreen , width=40 , height = 2)
+Box_Write.place (x = 50 , y = 25)
+
+
+
+#Create the button to find the pokemon 
+Find_Pokemon = tk.Button(MainScreen , text = "Find Pokemon" , command= Find_Pokemon_Function)
+Find_Pokemon.place(x = 100 , y = 100)
+
+
+  
+    
+
+
+
+
+
+
+MainScreen.mainloop()
